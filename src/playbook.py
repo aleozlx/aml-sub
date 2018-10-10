@@ -36,7 +36,7 @@ def inside_docker():
 
 def docker_start(docker, cmd):
     DOCKER = 'docker'
-    DOCKER_RUN = [ DOCKER, 'run', '--rm', '-v', os.path.abspath('.')+':/opt/docker-playbook:ro', '-w', '/home/developer' ]
+    DOCKER_RUN = [ DOCKER, 'run', '--rm', '-v', os.path.abspath('.')+':/opt/docker-playbook:ro', '-w', '/home/developer/workspace' ]
     if 'runtime' in docker:
         DOCKER_RUN.append('--runtime={}'.format(docker.runtime))
     if 'interactive' in docker and docker['interactive'] == True:
