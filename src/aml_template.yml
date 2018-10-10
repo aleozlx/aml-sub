@@ -1,0 +1,8 @@
+docker:
+  image: jupyter/datascience-notebook
+  volumes:
+  - /tmp/aml-sub/test:/home/developer/workspace
+steps:
+  - name: Say HI.
+    action: hello 
+  
