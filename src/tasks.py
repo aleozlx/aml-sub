@@ -10,13 +10,8 @@ config = dict(
     CELERY_TRACK_STARTED = True
 )
 
-#app = Celery('tasks', backend='rpc://', broker='pyamqp://guest@localhost//')
 app = Celery('tasks', backend='redis://', broker='redis://')
 app.conf.update(config)
-
-@app.task
-def add(x, y):
-    return x + y
 
 @app.task
 def aml(ctx):
