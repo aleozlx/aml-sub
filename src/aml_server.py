@@ -26,7 +26,7 @@ def submit(anon):
     return ok('Job submitted.')
 
 @app.route('/r/<anon>')
-def get_result(anon):
+def query(anon):
     task_id = tracker.get(anon)
     if task_id:
         r = aml.AsyncResult(task_id)
@@ -37,7 +37,7 @@ def get_result(anon):
             if 'transfer_back' in playbook_content:
                 output_file = '/tmp/aml-sub/{}/{}'.format(anon, playbook_content['transfer_back'])
                 if os.path.exists(output_file):
-                    return ok('Output file is ready.')
+                    return ok(playbook_content['transfer_back'])
                 else:
                     return err('Job has completed without generating the output file as specified.')
             else:
@@ -46,3 +46,12 @@ def get_result(anon):
             return err('Some error has occurred.')
         else:
             return pending()
+
+@app.route('/f/<anon>')
+def fetch(anon):
+    task_id = tracker.get(anon)
+    playbook = '/tmp/aml-sub/{}/submit.yml'.format(anon)
+    with open(playbook, 'r') as f:
+        playbook_content = yaml.load(f)
+    output_file = '/tmp/aml-sub/{}/{}'.format(anon, playbook_content['transfer_back'])
+    return send_file(output_file)
