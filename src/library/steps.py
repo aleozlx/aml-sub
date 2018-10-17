@@ -18,11 +18,11 @@ def step_m4_exercise(ctx):
     import numpy as np
     from sklearn.externals import joblib
     logging.getLogger().setLevel(logging.INFO)
-    print(os.getcwd())
     classifier = joblib.load('my_module_4_model.pkl')
     DATASET = '/dsa/data/all_datasets/autoMPG-1.txt'
     assert os.path.exists(DATASET)
     dataset = pd.read_csv(DATASET, index_col=0)
     X = np.array(dataset.iloc[:60,1:8])
     y = np.array(dataset.iloc[:60,0])
-    print(classifier.score(X, y))
+    with open('output.txt', 'w') as f:
+        f.write('{}\n'.format(classifier.score(X, y)))

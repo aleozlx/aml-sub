@@ -1,7 +1,7 @@
 docker:
   image: jupyter/datascience-notebook
   volumes:
-  - /tmp/aml-sub/test:/home/developer/workspace
+  - /tmp/aml-sub/workspace:/home/developer/workspace
   - /dsa/data/all_datasets:/dsa/data/all_datasets
 steps:
   - name: Say HI.
