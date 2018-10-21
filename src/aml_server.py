@@ -8,7 +8,7 @@ import json
 import yaml
 err = lambda d: (json.dumps(dict(status='err', msg=d)), 500)
 ok = lambda d: json.dumps(dict(status='ok', data=d))
-pending = lambda: json.dumps(dict(status='pending'))
+pending = lambda d: json.dumps(dict(status='pending', msg=d))
 tracker = Redis()
 AMLSUB = '/tmp/aml-sub'
 
@@ -24,6 +24,12 @@ def submit(anon):
         playbook='/tmp/aml-sub/{}/submit.yml'.format(anon)))
     tracker.set(anon, task.id)
     return ok('Job submitted.')
+
+@app.route('/del/<anon>', methods=['POST'])
+def revoke(anon):
+    container_name = 'aml-{}'.format(anon[:anon.index('-')])
+    os.system('docker stop {}'.format(container_name))
+    return ok('Task revoked.')
 
 @app.route('/r/<anon>')
 def query(anon):
@@ -44,8 +50,10 @@ def query(anon):
                 return err('No transfer_back specified')
         elif r.state == 'FAILURE':
             return err('Some error has occurred.')
+        elif r.state == 'STARTED':
+            return pending('started')
         else:
-            return pending()
+            return pending('queued')
 
 @app.route('/f/<anon>')
 def fetch(anon):

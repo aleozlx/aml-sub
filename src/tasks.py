@@ -6,7 +6,7 @@ config = dict(
     CELERY_TASK_SERIALIZER = 'json',
     CELERY_RESULT_SERIALIZER = 'json',
     CELERY_IGNORE_RESULT = False,
-    CELERYD_CONCURRENCY = 40,
+    CELERYD_CONCURRENCY = 2,
     CELERY_TRACK_STARTED = True
 )
 
@@ -21,4 +21,6 @@ def aml(ctx):
     os.system('tar xvf {archive} -C {workspace}'.format(**ctx))
     os.system("""sed -i 's/\/tmp\/aml-sub\/workspace/\/tmp\/aml-sub\/{anon}/g' {workspace}/submit.yml""".format(**ctx))
     # Using subprocess for module dependency isolation
-    subprocess.call(['python3', '-m', 'playbook', '--relocate', '/home/developer/workspace', ctx['playbook']])
+    os.chdir(ctx['workspace'])
+    playbook_script = os.path.join(os.path.dirname(__file__), 'playbook.py')
+    subprocess.call(['python3', playbook_script, '--relocate', '/home/developer/workspace', '--container-name', 'aml-{}'.format(ctx['anon'][:ctx['anon'].index('-')]), ctx['playbook']])

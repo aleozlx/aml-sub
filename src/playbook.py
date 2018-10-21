@@ -7,6 +7,7 @@ logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(message)s', dat
 logger = logging.getLogger('docker-playbook')
 parser = argparse.ArgumentParser(description='YAML driven DNN trainer.')
 parser.add_argument('--docker-step', type=int, help='For Docker use only: run a specific step with docker')
+parser.add_argument('--container-name', type=str, help='Rename container')
 parser.add_argument('--relocate', type=str, help='Relocation of the playbook inside docker')
 parser.add_argument('playbook', type=str, help='YAML playbook')
 args = parser.parse_args()
@@ -36,11 +37,13 @@ def inside_docker():
 
 def docker_start(docker, cmd):
     DOCKER = 'docker'
-    DOCKER_RUN = [ DOCKER, 'run', '--rm', '-v', os.path.abspath('.')+':/opt/docker-playbook:ro', '-w', '/home/developer/workspace' ]
+    DOCKER_RUN = [ DOCKER, 'run', '--rm', '-t', '-v', 
+        '/home/aleozlx/Code/aml-sub/src:/opt/docker-playbook:ro', # TODO patch in the future 
+        '-w', '/home/developer/workspace' ]
     if 'runtime' in docker:
-        DOCKER_RUN.append('--runtime={}'.format(docker.runtime))
+        DOCKER_RUN.append('--runtime={}'.format(docker['runtime']))
     if 'interactive' in docker and docker['interactive'] == True:
-        DOCKER_RUN.append('-it')
+        DOCKER_RUN.append('-i')
     if 'ports' in docker:
         for port in docker['ports']:
             DOCKER_RUN.extend(['-p', port])
@@ -53,6 +56,10 @@ def docker_start(docker, cmd):
             '-e', 'DISPLAY', '--net=host',
             '-v', '/tmp/.X11-unix:/tmp/.X11-unix:rw',
             '-v', os.path.expanduser('~/.Xauthority') + ':/home/developer/.Xauthority:ro'
+        ])
+    if args.container_name:
+        DOCKER_RUN.extend([
+            '--name', args.container_name
         ])
     DOCKER_RUN.append(docker["image"])
     DOCKER_RUN.extend(cmd)
