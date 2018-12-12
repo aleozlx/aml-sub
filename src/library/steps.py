@@ -39,7 +39,7 @@ def step_m6_cleanup(ctx):
     # delete plotting
     os.system(r"sed -i -e '/\bplt\b/d' -e '/\bimshow\b/d' TransferLearning.py")
     # increase epochs
-    os.system(r"sed -i -e 's/\bepochs=1/epochs=50/g'  -e 's/steps_per_epoch = 10/steps_per_epoch = 570/g' -e 's/validation_steps = 5/validation_steps = 100/g'  -e 's/\bsteps = 5/steps = 100/g' TransferLearning.py")
+    os.system(r"sed -i -e 's/\bepochs=1/epochs=15/g'  -e 's/steps_per_epoch = 10/steps_per_epoch = 570/g' -e 's/validation_steps = 5/validation_steps = 100/g'  -e 's/\bsteps = 5/steps = 100/g' TransferLearning.py")
     #os.system("tail -n 30 TransferLearning.py")
 
 def step_m6_exercise(ctx):
